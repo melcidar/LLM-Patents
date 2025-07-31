@@ -1,0 +1,33 @@
+import pandas as pd
+
+df = pd.DataFrame(
+    data=[
+        {
+            'claim': '1. A medical diagnostic ultrasound imaging system with a patient support surface comprising: a base; a patient support surface coupled with the base; and a medical diagnostic ultrasound imaging system cart detachably coupled with the base and carrying: a transducer probe; a beamformer coupled with the transducer probe; a processor coupled with the beamformer; a display device coupled with the processor; and a user interface coupled with the processor; wherein the base and the medical diagnostic ultrasound imaging system cart each comprises at least one respective wheel, and wherein, when the medical diagnostic ultrasound imaging system cart is detachably coupled with the base, the base and the medical diagnostic ultrasound imaging system cart can be wheeled together as a single unit.',
+            'patent_id': '6716167',
+            'top 10 retrieved patents': None,
+            'found itself (Y/N)': None,
+            'top 100 retrieved innography patents': None,
+            'total found': None
+        },
+        {
+            'claim': "1. A method for detecting an object in a three-dimensional medical image, comprising: determining, by a processing device, from data representing the three-dimensional medical image, for each voxel in a portion of the three-dimensional medical image, values of a plurality of features at the voxel, wherein each feature at the voxel characterizes a respective property of the three-dimensional medical image at the voxel; calculating, by the processing device, a likelihood probability distribution of each feature based on the determined values of the feature and a parameter value derived from training data; generating, by the processing device, a probability map that indicates a probability of each voxel in the portion of the three-dimensional medical image containing an object to be detected, wherein said generating a probability map includes combining, using Bayes' law, the likelihood probability distributions of the plurality of features at each respective voxel of the portion of the three-dimensional medical image; detecting, by the processing device, the object in the portion of the three-dimensional medical image based on the probability map; and outputting, by the processing device, an indication of the detected object.",
+            'patent_id': '8379950',
+            'top 10 retrieved patents': None,
+            'found itself (Y/N)': None,
+            'top 100 retrieved innography patents': None,
+            'total found': None
+        },
+        {
+            'claim': "1. A system for a motor vehicle including a motor vehicle side door and an outside rear view mirror, the system comprising: a door motor coupled to the motor vehicle side door and configured to selectively prevent movement of the motor vehicle side door toward a fully open position; a camera coupled to the outside rear view mirror and positioned to monitor an area external to the vehicle and adjacent the motor vehicle side door, the camera configured to determine a first distance between the motor vehicle side door and an obstacle detected within the monitored area; a motor controller operatively coupled to the door motor and configured to selectively disable the motor vehicle side door by commanding the door motor to prevent movement of the motor vehicle side door toward the fully open position; and a processor operatively coupled to the camera and to the motor controller, the processor configured to transmit a signal to the motor controller to disable the motor vehicle side door if the first distance is within a first threshold distance of the motor vehicle side door.",
+            'patent_id': '8442755',
+            'top 10 retrieved patents': None,
+            'found itself (Y/N)': None,
+            'top 100 retrieved innography patents': None,
+            'total found': None
+        }
+    ]
+)
+
+print(df)
+df.to_csv('check1.csv', index=False)

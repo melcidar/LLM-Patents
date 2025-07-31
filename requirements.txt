@@ -1,0 +1,7 @@
+pandas
+numpy
+tqdm
+sqlalchemy
+sentence-transformers
+python-dotenv
+pyodbc
