@@ -8,10 +8,8 @@ from sqlalchemy import create_engine
 from sentence_transformers import SentenceTransformer
 from multiprocessing import Pool, cpu_count
 
-# Load environment variables
 load_dotenv()
 
-# DB config
 server = os.getenv("DB_SERVER")
 database = os.getenv("DB_NAME")
 connection_string = (
@@ -24,7 +22,6 @@ connection_string = (
 )
 engine = create_engine(connection_string)
 
-# Text cleaning
 def clean_claim(text):
     if not text:
         return ""
@@ -32,28 +29,18 @@ def clean_claim(text):
     text = re.sub(r'the present invention.*?\.', '', text, flags=re.IGNORECASE)
     return text.strip()
 
-# Chunk processor — runs in each process
 def process_chunk(chunk):
-    import torch
-    torch.set_num_threads(1)
-    torch.set_num_interop_threads(1)
-
-    model = SentenceTransformer("local_bge_model")  # local download to avoid HF rate limits
+    model = SentenceTransformer("local_bge_model")
     chunk['cleaned_claim'] = chunk['claim_text'].apply(clean_claim)
     embeddings = model.encode(chunk['cleaned_claim'].tolist(), batch_size=256, show_progress_bar=False)
     return (chunk[['patent_id', 'cleaned_claim']], embeddings)
 
-# Main
+#took about 50 minutes
 def main():
-    import torch
-    torch.set_num_threads(1)
-    torch.set_num_interop_threads(1)
-
     os.makedirs("output", exist_ok=True)
-    batch_size = 100_000  # adjust based on memory capacity
+    batch_size = 50000
     offset = 0
     batch_num = 0
-    max_workers = min(cpu_count(), 12)
 
     with engine.connect() as conn:
         while True:
@@ -67,14 +54,16 @@ def main():
             df = pd.read_sql(query, conn)
 
             if df.empty:
-                print("✅ Done! No more rows.")
+                print("Done! No more rows.")
                 break
 
-            chunks = np.array_split(df, max_workers)
-            print(f"🔄 Processing batch {batch_num} — Rows: {len(df)} using {max_workers} workers...")
+            num_chunks = min(cpu_count(), 12)
+            chunks = np.array_split(df, num_chunks)
 
-            with Pool(processes=max_workers) as pool:
-                results = list(tqdm(pool.imap(process_chunk, chunks), total=len(chunks), desc="🧠 Embedding chunks"))
+            print(f"Processing batch {batch_num} using {num_chunks} processes...")
+
+            with Pool(processes=num_chunks) as pool:
+                results = list(tqdm(pool.imap(process_chunk, chunks), total=len(chunks), desc="Embedding chunks"))
 
             meta_parts, embed_parts = zip(*results)
             meta_df = pd.concat(meta_parts, ignore_index=True)
@@ -83,7 +72,7 @@ def main():
             meta_df.to_csv(f"output/metadata_batch_{batch_num}.csv", index=False)
             np.save(f"output/embeddings_batch_{batch_num}.npy", embed_matrix)
 
-            print(f"✅ Saved batch {batch_num} — Rows: {len(meta_df)}")
+            print(f"Saved batch {batch_num} — Rows: {len(meta_df)}")
 
             offset += batch_size
             batch_num += 1
