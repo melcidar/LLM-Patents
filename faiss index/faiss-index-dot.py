@@ -14,8 +14,8 @@ index_dir = os.getenv("INDEX_DIR")
 def normalize(vectors):
     return vectors / np.linalg.norm(vectors, axis=1, keepdims=True)
 
-embedding_files = sorted(glob.glob(os.path.join(data_folder, "embeddings_batch_*.npy")))
-metadata_files = sorted(glob.glob(os.path.join(data_folder, "metadata_batch_*.csv")))
+embedding_files = sorted(glob.glob(os.path.join(data_folder, "embeddings_batch_sample_*.npy")))
+metadata_files = sorted(glob.glob(os.path.join(data_folder, "metadata_batch_sample_*.csv")))
 
 sample = np.load(embedding_files[0])
 dimension = sample.shape[1]
@@ -41,12 +41,12 @@ all_metadata = []
 for emb_file, meta_file in tqdm(zip(embedding_files, metadata_files), total=len(embedding_files), desc="Indexing"):
     emb = np.load(emb_file).astype("float32")
     emb = normalize(emb)
-    #df = pd.read_csv(meta_file)
+    df = pd.read_csv(meta_file)
 
     index.add(emb)
-    #all_metadata.append(df)
+    all_metadata.append(df)
 
-index_path = os.path.join(index_dir, "faiss_index_ivf_cosine.bin")
+index_path = os.path.join(index_dir, "faiss_index_ivf_cosine_sample.bin")
 faiss.write_index(index, index_path)
 
 '''
